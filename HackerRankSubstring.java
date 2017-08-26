@@ -1,17 +1,34 @@
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
 
-public class HackerRankSubstring {
+public class Solution {
+  
+	public static String getSmallestAndLargest(String s, int k) {
+        String smallest = "";
+        String arr[] = new String[s.length()-k+1];
+        String largest = "";
+        for(int i=0;i<s.length()-k+1;i++) {
+			arr[i] = s.substring(i,i+k);	
+        }
+        
+        Arrays.sort(arr);
+        smallest= arr[0];
+        largest = arr[arr.length-1];
+        return smallest + "\n" + largest;
+		
+        
+    }
 
-	public static void main(String[] args) {
-
-	   
-	        Scanner in = new Scanner(System.in);
-	        String S = in.nextLine();
-	        int start = in.nextInt();
-	        int end = in.nextInt();
-	        String s1 = S.substring(start,end);
-	        System.out.println(""+s1);
-	        in.close();
-	}
-
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        String s = scan.next();
+        int k = scan.nextInt();
+        scan.close();
+      
+        System.out.println(getSmallestAndLargest(s, k));
+    }
 }
+
