@@ -1,9 +1,9 @@
 
 
-class Shapes{
+class Shapes{            //parent class 
 	void area() {
 		System.out.println("I have area");	
-	}
+	}                                                                             //Parent class has feauturs which is common to all classes
 	void radius() {
 		System.out.println("I have no radius");
 	}
@@ -16,9 +16,9 @@ class Shapes{
 	}
 	
 }
-	class triangle extends Shapes{
+	class triangle extends Shapes{                       //inheritance
 		void NameDisplay(){
-			System.out.println("I am a triangle");
+			System.out.println("I am a triangle");       //special feature
 		}
 		void corners() {
 			System.out.println("I have 3 corners");
@@ -29,8 +29,8 @@ class Shapes{
 		void NameDisplay() {
 			System.out.println("I am a circle");
 		}
-		@Override
-		void radius() {
+		@Override                                                //overriding the default feauture 
+		void radius() {                                          //parent feature can be accessed by super();
 			System.out.println("I have  radius");
 		}
 	}
@@ -46,8 +46,8 @@ class Shapes{
 
 	
 	class DrawingShapes  {
-		void ShapeCaller (Shapes shapes) {
-			shapes.area();
+		void ShapeCaller (Shapes shapes) {     //upcasting                      //to make program DRY(Dont repeat yourself)
+			shapes.area();                                                       //to make srp and dry we are using another class and a function to call 
 			shapes.perimeter();
 			shapes.radius();
 			shapes.closedFigure();
@@ -55,7 +55,7 @@ class Shapes{
 			 circle c = (circle) shapes;
 			 c.NameDisplay();
 			}
-			else if ( shapes instanceof square) {
+			else if ( shapes instanceof square) {     //downcasting
 				square s = (square) shapes;
 					s.NameDisplay();
 				}
@@ -73,9 +73,9 @@ class Shapes{
 public class InheritanceQuestion {
 
 	public static void main(String[] args) {
-		DrawingShapes ds = new DrawingShapes();
+		DrawingShapes ds = new DrawingShapes();     //object to DrawingShapes
 		
-		ds.ShapeCaller(new circle());
+		ds.ShapeCaller(new circle());                //program is now dry
         ds.ShapeCaller(new square());
         ds.ShapeCaller(new triangle());
 
