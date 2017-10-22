@@ -1,3 +1,5 @@
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -8,11 +10,12 @@ import javax.imageio.ImageIO;
 public class Player implements GameConstants,GameStates {
 
 	
-	public int w=80;
-	public int h =100;
+	public int w=120;
+	public int h =200;
 	public int floor = GAME_HEIGHT - 50;
 	public int force;
 	public int xSPEED;
+	public int health =100;
 	public int SPEED=10;
 	public int  defaultIndex =0;
 	public BufferedImage defaultImage[] ;
@@ -38,6 +41,8 @@ public class Player implements GameConstants,GameStates {
 	public int State = DEFAULT;
 	public int x =200;
 	public int  GRAVITY =1;
+	public boolean isPunched;
+	public boolean isKicked;
 	public boolean  isJump =false;
 	public Player() {
 		isVisible =true;
@@ -59,16 +64,24 @@ public class Player implements GameConstants,GameStates {
 		punchEffect[2] = spriteSheet.getSubimage(534, 811, 92, 32);
 		return punchEffect;
 	}
-
+	
+	public void DrawScore(Graphics g) {
+		g.setFont(new Font("Arial",Font.BOLD,45));
+		g.setColor(Color.MAGENTA);
+		g.drawString(Integer.toString(health),x, y);
+	}
 	public void punchEffectOnPlayer(Graphics g) {
 		if(PunchEffectIndex>loadPunchEffectOnPlayer().length-1) {
 			PunchEffectIndex=0;
+			defaultIndex=0;
+			isPunched=false;
+			isKicked = false;
 			State = DEFAULT;
 		}
 		else {
 			g.drawImage(punchEffect[PunchEffectIndex],x,y , w, h,null);
 		PunchEffectTimePass++;
-			if(PunchEffectTimePass==5) {
+			if(PunchEffectTimePass==8) {
 				PunchEffectIndex++;
 				PunchEffectTimePass=0;
 			}
@@ -77,6 +90,7 @@ public class Player implements GameConstants,GameStates {
 	public void jumpEffect(Graphics g) {
 		if(jumpIndex>jumpLoad().length-1) {
 			jumpIndex=0;
+			
 			State = DEFAULT;
 		}
 		else {
@@ -91,6 +105,7 @@ public class Player implements GameConstants,GameStates {
 	public void punchEffect(Graphics g) {
 		if(punchIndex>punchLoad().length-1) {
 			punchIndex=0;
+//			defaultIndex=0;
 			State = DEFAULT;
 		}
 		else {
@@ -107,6 +122,7 @@ public class Player implements GameConstants,GameStates {
 	public void kickEffect(Graphics g) {
 		if(kickIndex>kickLoad().length-1) {
 			kickIndex=0;
+//	        defaultIndex=0;
 			State = DEFAULT;
 		}
 		else {
@@ -221,7 +237,9 @@ public class Player implements GameConstants,GameStates {
 	
 
 public void DrawOnState(Graphics g) {
+	DrawScore(g);
 if(State==DEFAULT) {
+//	System.out.println("I AM DEFAULT");
 	playerDefaultState(g);
 	
 }	
@@ -233,6 +251,9 @@ else if(State == PUNCH) {
 }
 else if(State == KICK) {
 	 kickEffect(g); 
+}
+else if(State==PUNCHED){
+punchEffectOnPlayer(g);	
 }
 }
 

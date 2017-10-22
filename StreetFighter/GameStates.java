@@ -6,4 +6,5 @@ public interface GameStates {
 	int PUNCH =3;
 	int JUMP =4;
 	int KICK =5;
+	int PUNCHED =6;
 }

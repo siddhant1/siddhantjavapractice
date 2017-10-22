@@ -1,3 +1,5 @@
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -10,8 +12,9 @@ public class Enemy implements GameConstants,EnemyStates {
 	public BufferedImage defaultKen[];
 	public int defaultKenIndex;
 	public int defaultKenpass;
-	public int w=80;
-	public int h =100;
+	public int w=120;
+	public int h =200;
+	public int health=100;
 	public int floor = GAME_HEIGHT - 50;
 	public int y =floor-h;
 	public int x =700;
@@ -19,6 +22,7 @@ public class Enemy implements GameConstants,EnemyStates {
 	public int GRAVITY =1;
 	public int xSPEED;
 	public int SPEED=10;
+	public boolean isPunched;
 	public boolean isJump;
 	public int PunchEffectIndex=0;
 	public int PunchEffectTimePass=0;
@@ -44,6 +48,7 @@ public class Enemy implements GameConstants,EnemyStates {
 	public int kickIndex=0;
 	public int kickTimePass=0;
 	public int State = DEFAULT;
+	public boolean isKicked;
 //	public int  GRAVITY =1;
 //	public boolean  isJump =false;
 	public Enemy() {
@@ -66,15 +71,25 @@ public class Enemy implements GameConstants,EnemyStates {
 		return punchEffect;
 	}
 
+	
+	public void DrawScore(Graphics g) {
+		g.setFont(new Font("Arial",Font.BOLD,45));
+		g.setColor(Color.MAGENTA);
+		g.drawString(Integer.toString(health),x, y);
+		
+	}
+	
 	public void punchEffectOnPlayer(Graphics g) {
 		if(PunchEffectIndex>loadPunchEffectOnPlayer().length-1) {
 			PunchEffectIndex=0;
 			State = DEFAULT;
+			isPunched =false;
+			isKicked = false;
 		}
 		else {
 			g.drawImage(punchEffect[PunchEffectIndex],x,y , w, h,null);
 		PunchEffectTimePass++;
-			if(PunchEffectTimePass==5) {
+			if(PunchEffectTimePass==8) {
 				PunchEffectIndex++;
 				PunchEffectTimePass=0;
 			}
@@ -142,6 +157,7 @@ public void jumpEffect(Graphics g) {
 public void punchEffect(Graphics g) {
 	if(punchIndex>punchLoad().length-1) {
 		punchIndex=0;
+//		isPunched = false;
 		State = DEFAULT;
 	}
 	else {
@@ -157,6 +173,7 @@ public void punchEffect(Graphics g) {
 public void kickEffect(Graphics g) {
 	if(kickIndex>kickLoad().length-1) {
 		kickIndex=0;
+//		isKicked =false;
 		State = DEFAULT;
 	}
 	else {
@@ -244,7 +261,9 @@ public BufferedImage[] kickLoad() {
 
 
 public void DrawOnState(Graphics g) {
-if(State==DEFAULT) {
+	DrawScore(g);
+if(State==DEFAULT) 
+{
 drawKen(g);
 
 }	
@@ -256,6 +275,9 @@ punchEffect(g);
 }
 else if(State == KICK) {
  kickEffect(g); 
+}
+else if(State == PUNCHED) {
+	punchEffectOnPlayer(g);
 }
 }
 }

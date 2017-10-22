@@ -1,5 +1,7 @@
 
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -17,14 +19,35 @@ public class Board extends JPanel implements GameConstants,GameStates{
 	Enemy enemy;
 	Rectangle enemyRec;
 	Rectangle playerRec;
+	public boolean showInstruction;
 public Board() {
+	showInstruction = true;
 	this.setFocusable(true);
 	player =  new Player();
 	enemy = new Enemy();
 	loadBackground();
 	setSize(GAME_HEIGHT, GAME_WIDTH);
 	GameLoop();
-	bindEvents();
+
+}
+
+public void GameOver(Graphics g) {
+	if(isGameOver()) {
+		g.setColor(Color.CYAN);
+		g.setFont(new Font("Arial", Font.BOLD, 45));
+		g.drawString("GAME OVERR!!!", 350, 300);
+		timer.stop();
+	}
+}
+
+public boolean isGameOver() {
+	if(enemy.health<=0) {
+		return true;
+	}
+	if(player.health<=0) {
+		return true;
+	}
+	else return false;
 }
 
 public void GameLoop() {
@@ -33,6 +56,10 @@ public void GameLoop() {
 		player.fall();
 		enemy.fall();
 		Collision();
+		isGameOver();
+		if(!isGameOver()) {
+			bindEvents();
+			}		
 //		checkCollision();
 	});
 	timer.start();	
@@ -41,19 +68,44 @@ public void loadBackground() {
 	background = new ImageIcon(Board.class.getResource("bg.gif")).getImage();
 }
 
+public void instruction(Graphics g) {
+	g.setFont(new Font("Arial", Font.CENTER_BASELINE, 25));
+	g.setColor(Color.GREEN);
+	g.drawString("The Game Ends if Health Of any Player Reaches 0 , Press Control to remove Instructions" , 13, 50);
+	g.drawString("Player1 : PRESS T TO PUNCH AND Y TO KICK, A,D   TO MOVE AND SPACE TO JUMP", 13, 100);
+	g.drawString("Player2 : PRESS P TO PUNCH AND O TO KICK AND ARROW KEYS TO MOVE AND JUMP", 13, 150);
+	
+}
+
 public void Collision() {
 	 enemyRec = new Rectangle(enemy.x, enemy.y, enemy.w, enemy.h);
 	playerRec = new Rectangle(player.x, player.y, player.w, player.h); 
 }
 
 public void checkCollision(Graphics g) {
-	if(enemyRec.intersects(playerRec)&&(enemy.State==KICK||enemy.State==PUNCH)) {
-		player.punchEffectOnPlayer(g);
+	if(enemyRec.intersects(playerRec)&&enemy.State==KICK && !player.isKicked) {
+		player.isKicked = true;
+		player.setState(PUNCHED);
+		player.health -= 20;
+		
+	}
+	if(enemyRec.intersects(playerRec)&&enemy.State==PUNCH && !player.isPunched) {
+		player.isPunched = true;
+		player.setState(PUNCHED);
+		player.health -= 10;
+		
 	}
 }
 public void checkCollision1(Graphics g) {
-	if(enemyRec.intersects(playerRec)&&(player.State==KICK||player.State==PUNCH)) {
-		enemy.punchEffectOnPlayer(g);
+	if(enemyRec.intersects(playerRec)&&player.State==PUNCH && !enemy.isPunched) {
+		enemy.setState(PUNCHED);
+		enemy.isPunched=true;
+		enemy.health -= 10;
+	}
+	if(enemyRec.intersects(playerRec)&&(player.State==KICK && !enemy.isKicked)){
+		enemy.setState(PUNCHED);
+		enemy.isKicked = true;
+		enemy.health -= 20;
 	}
 }
 
@@ -109,6 +161,9 @@ public void bindEvents() {
 			if(e.getKeyCode()==KeyEvent.VK_O) {
 				enemy.setState(KICK);
 			}
+			if(e.getKeyCode()==KeyEvent.VK_CONTROL) {
+				showInstruction = false;
+			}
 			
 		}
 	});
@@ -119,7 +174,13 @@ public void drawbackground(Graphics g) {
 }
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+//		enemy.DrawScore(g);
+
 		drawbackground(g);
+		if(showInstruction) {
+			instruction(g);
+		}
+		GameOver(g);
 		player.DrawOnState(g);
 		checkCollision(g);
 		checkCollision1(g);
